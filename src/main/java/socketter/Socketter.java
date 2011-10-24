@@ -1,5 +1,6 @@
 package socketter;
 
+import org.eclipse.jetty.http.ssl.SslContextFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -40,15 +41,25 @@ public class Socketter {
 		server = new Server();
 		
 		if(ssl){
-			SslSelectChannelConnector sslconnector = new SslSelectChannelConnector();
-			sslconnector.setKeystore(this.getClass().getClassLoader().getResource("ssl/localhost.keystore").toExternalForm());
-			sslconnector.setKeyPassword("localhost");
+			String keystorePath = this.getClass().getClassLoader().getResource("ssl/localhost.keystore").toExternalForm();
+			String keystorePassword = "localhost";
+			SslContextFactory scf = new SslContextFactory();
+			scf.setKeyStore(keystorePath);
+			scf.setKeyStorePassword(keystorePassword);
+			scf.setTrustStore(keystorePath);
+			scf.setTrustStorePassword(keystorePassword);
+			try{
+				scf.checkKeyStore();
+			}catch(Exception e){
+				throw new Exception("checkKeyStore error : " + e.getMessage());
+			}
+			SslSelectChannelConnector sslconnector = new SslSelectChannelConnector(scf);
 			sslconnector.setPort(port);
-			server.setConnectors(new Connector[]{sslconnector});
+			server.addConnector(sslconnector);
 		} else {
 			Connector connector = new SelectChannelConnector();
 			connector.setPort(10080);
-			server.setConnectors(new Connector[]{connector});
+			server.addConnector(connector);
 		}
 	
 		ResourceHandler rh = new ResourceHandler();

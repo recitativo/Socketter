@@ -25,9 +25,9 @@ import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.http.AccessToken;
 import twitter4j.http.RequestToken;
 
-public class WebSocketTwitter implements WebSocket {
+public class WebSocketTwitter implements WebSocket.OnTextMessage {
 
-	private Outbound outbound_;
+	private Connection connection;
 	private static Set<WebSocketTwitter> connections_ = new CopyOnWriteArraySet<WebSocketTwitter>();
 	private TwitterStream twitterStream;
 	private UserStream userStream;
@@ -37,8 +37,8 @@ public class WebSocketTwitter implements WebSocket {
 	private Twitter tw;
 	private RequestToken rt;
 	private AccessToken at;
-	private String consumerKey = "5L96A2mk84eChzlgmu1w";
-	private String consumerSecret = "OuXFaS8KXkkSnbEc3kZGkJkUoXERyexe3XFtAcbGjbQ";
+	private String consumerKey = "snYgw0i6GsheYpnZiVJifA";
+	private String consumerSecret = "x8iOzMgZAE3k9XbaK2AuJPFevcdfEV8sftjymvyzj0";
 	private String accessToken = "";
 	private String accessTokenSecret = "";
 	private String screenName = "";
@@ -85,30 +85,31 @@ public class WebSocketTwitter implements WebSocket {
 		
 		th.start();
 	}
-	  @Override
-	public void onConnect(Outbound outbound) {
+
+	@Override
+	public void onOpen(Connection con) {
 		thstop = true;
-		outbound_ = outbound;
+		connection = con;
 		connections_.add(this);
 		System.out.println("onConnect " + connections_.size() + "users");
 	}
 
 	@Override
-	public void onDisconnect() {
+	public void onClose(int arg0, String arg1) {
 		thstop = true;
 		connections_.remove(this);
 		System.out.println("onDisconnect " + screenName);
 	}
 
 	@Override
-	public void onMessage(byte frame, String data) {
+	public void onMessage(String msg) {
 		Pattern pp = Pattern.compile("^twitter[ ]*\\([ ]*([0-9]+)[ ]*\\)$");
-		Matcher mp = pp.matcher(data);
+		Matcher mp = pp.matcher(msg);
 		Pattern pa = Pattern.compile("^twitter[ ]*\\([ ]*([a-zA-Z0-9\\-]+)[ ]*,[ ]*([a-zA-Z0-9]+)[ ]*\\)$");
-		Matcher ma = pa.matcher(data);
+		Matcher ma = pa.matcher(msg);
 		Pattern pt = Pattern.compile("^tweet[ ]*\\([ ]*(.+)[ ]*\\)$");
-		Matcher mt = pt.matcher(data);
-		if(data.equals("twitter")) {
+		Matcher mt = pt.matcher(msg);
+		if(msg.equals("twitter")) {
 			// show oauth URL
 			String url = "";
 			tw = new TwitterFactory().getInstance();
@@ -116,10 +117,10 @@ public class WebSocketTwitter implements WebSocket {
 			try {
 				rt = tw.getOAuthRequestToken();
 				url = rt.getAuthorizationURL();
-				outbound_.sendMessage("下記URLに行ってtwitterで認証して暗証番号をゲットしてきて\n" + url + "\nそんで twitter(暗証番号) を入力して");
+				connection.sendMessage("下記URLに行ってtwitterで認証して暗証番号をゲットしてきて\n" + url + "\nそんで twitter(暗証番号) を入力して");
 			} catch (TwitterException e) {
 				try {
-					outbound_.sendMessage("認証用URLの取得に失敗");
+					connection.sendMessage("認証用URLの取得に失敗");
 				} catch (IOException e1) {
 //					e1.printStackTrace();
 				}
@@ -136,11 +137,11 @@ public class WebSocketTwitter implements WebSocket {
 				at = tw.getOAuthAccessToken(rt, pin);
 				accessToken = at.getToken();
 				accessTokenSecret = at.getTokenSecret();
-				outbound_.sendMessage("以下は AccessToken と AccessTokenSecret だよ\nAccessToken : " + accessToken + "\nAccessTokenSecret : " + accessTokenSecret + "\nこんどから下記コマンドだけでtwitterを開始できるよ\ntwitter(" + accessToken + "," + accessTokenSecret + ")");
+				connection.sendMessage("以下は AccessToken と AccessTokenSecret だよ\nAccessToken : " + accessToken + "\nAccessTokenSecret : " + accessTokenSecret + "\nこんどから下記コマンドだけでtwitterを開始できるよ\ntwitter(" + accessToken + "," + accessTokenSecret + ")");
 			} catch (TwitterException e) {
 				e.printStackTrace();
 				try {
-					outbound_.sendMessage("AccessToken取得失敗");
+					connection.sendMessage("AccessToken取得失敗");
 				} catch (IOException e1) {
 //					e1.printStackTrace();
 				}
@@ -157,7 +158,11 @@ public class WebSocketTwitter implements WebSocket {
 			try {
 				screenName = tw.verifyCredentials().getScreenName();
 			} catch (TwitterException e) {
-				e.printStackTrace();
+				try {
+					connection.sendMessage("AccessToken取得失敗");
+				} catch (IOException e1) {
+					// e1.printStackTrace();
+				}
 			}
 
 			startTwitterUserStream();
@@ -169,31 +174,23 @@ public class WebSocketTwitter implements WebSocket {
 			try {
 				tw.updateStatus(mt.group(1));
 			} catch (TwitterException e) {
-				e.printStackTrace();
+				try {
+					connection.sendMessage("Tweet失敗");
+				} catch (IOException e1) {
+					// e1.printStackTrace();
+				}
 			}
 		} else {
 			// チャットメッセージ
 			for(WebSocketTwitter connection : connections_) {
 				try {
-					connection.outbound_.sendMessage(frame, data);
+					connection.connection.sendMessage(msg);
 				} catch (IOException e) {
 //					e.printStackTrace();
 				}
 			}
 		}
 		System.out.println("onMessage " + screenName);
-	}
-
-	@Override
-	public void onMessage(byte frame, byte[] data, int offset, int length) {
-		for(WebSocketTwitter connection : connections_) {
-			try {
-				connection.outbound_.sendMessage(frame, data, offset, length);
-			} catch (IOException e) {
-//				e.printStackTrace();
-			}
-		}
-		System.out.println("onMessage2 " + screenName);
 	}
 
 	// 以下、twitter4jのUserStreamListener
@@ -209,6 +206,7 @@ public class WebSocketTwitter implements WebSocket {
 		}
 	
 		@Override
+		@SuppressWarnings("deprecation")
 		public void onStatus(Status status) {
 			try {
 				String datetime = Integer.toString(status.getCreatedAt().getYear() + 1900) + "/";
@@ -217,7 +215,7 @@ public class WebSocketTwitter implements WebSocket {
 				datetime += Integer.toString(status.getCreatedAt().getHours()) + ":";
 				datetime += Integer.toString(status.getCreatedAt().getMinutes()) + ":";
 				datetime += Integer.toString(status.getCreatedAt().getSeconds());
-				outbound_.sendMessage(status.getUser().getScreenName() + " : " + datetime + " : " + status.getText());
+				connection.sendMessage(status.getUser().getScreenName() + " : " + datetime + " : " + status.getText());
 			} catch (IOException e) {
 //					e.printStackTrace();
 			}

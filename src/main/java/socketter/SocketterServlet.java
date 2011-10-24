@@ -13,7 +13,7 @@ public class SocketterServlet extends WebSocketServlet {
 	}
 
 	@Override
-	protected WebSocket doWebSocketConnect(HttpServletRequest request, String protocol) {
+	public WebSocket doWebSocketConnect(HttpServletRequest request, String protocol) {
 		return new WebSocketTwitter();
 	}
 

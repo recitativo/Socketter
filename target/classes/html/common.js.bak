@@ -124,17 +124,17 @@ function sendMsg(msg){
 	}
 }
 
-function lateSend(msg){
+function lateSend(message){
 	if(!wscssl){
 		wsOpen();
 		setTimeout("lateSend(\"" + msg + "\")", 500);
 	}else if(wscssl.readyState == 1){
-		wscssl.send(msg);
+		wscssl.send(message);
 	}else if(wscssl.readyState == 0){
-		setTimeout("lateSend(\"" + msg + "\")", 500);
+		setTimeout("lateSend(\"" + message + "\")", 500);
 	}else{
 		wsOpen();
-		setTimeout("lateSend(\"" + msg + "\")", 500);
+		setTimeout("lateSend(\"" + message + "\")", 500);
 	}
 }
 
@@ -257,7 +257,7 @@ function draw() {
 			
 			// 線を描く
 			//drawLine($("lineColor").value, lineWidth, fromX, fromY, toX, toY);
-			sendMsg("draw(" + $("lineColor").value + "," + lineWidth + "," + Math.floor(fromX) + "," + Math.floor(fromY) + "," + Math.floor(toX) + "," + Math.floor(toY) + ")");
+			sendMsg("draw(" + $("lineColor").value + "," + lineWidth + "," + fromX + "," + fromY + "," + toX + "," + toY + ")");
 
 			// 位置を記録
 			fromX = toX;

@@ -1,0 +1,36 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<title>Socketter</title>
+<link type="text/css" href="common.css" rel="stylesheet">
+<script src="common.js" type="text/javascript"></script>
+<script src="cpick.js" type="text/javascript"></script>
+</head>
+<body>
+<div>
+<form id="sendfrm">
+<div id="msgarea" style="display:inline"><input type="text" id="message" placeholder="helpと入力してみよう" /></div>
+<input type="submit" id="sendbtn" style="display:none" />
+<span id="exp"><a href="javascript:void(0)" style="text-decoration:none;color:black">▼</a></span>
+<a id="pen" href="javascript:void(0)" style="text-decoration:none;color:black">✎</a>
+<span id="status"></span>
+</form>
+</div>
+<div id="draw" style="display:none">
+	<canvas id="cvs" style="border:1px solid black; background-color:white; float:left"></canvas>
+	<input type="text" id="lineColor" value="#ff0000" style="display:none" />
+	<button style="width:80px; display:block;" id="bntLineColor" class="html5jp-cpick [target:lineColor;coloring:true]">color ►</button>
+	<div><input name="lineWidth" id="lw1" type="radio" value="1" onclick="lineWidth = 1;" /><label for="lw1"><svg id="svg1" width="50" height="15" viewbox="0 0 50 15"><line id="ln1" x1="5" y1="7" x2="45" y2="7" stroke="#ff0000" stroke-width="1"></line></svg></label></div>
+	<div><input name="lineWidth" id="lw3" type="radio" value="3" onclick="lineWidth = 3;" /><label for="lw3"><svg id="svg3" width="50" height="15" viewbox="0 0 50 15"><line id="ln3" x1="5" y1="7" x2="45" y2="7" stroke="#ff0000" stroke-width="3"></line></svg></label></div>
+	<div><input name="lineWidth" id="lw5" type="radio" value="5" onclick="lineWidth = 5;" checked /><label for="lw5"><svg id="svg5" width="50" height="15" viewbox="0 0 50 15"><line id="ln5" x1="5" y1="7" x2="45" y2="7" stroke="#ff0000" stroke-width="5"></line></svg></label></div>
+	<div><input name="lineWidth" id="lw7" type="radio" value="7" onclick="lineWidth = 7;" /><label for="lw7"><svg id="svg7" width="50" height="15" viewbox="0 0 50 15"><line id="ln7" x1="5" y1="7" x2="45" y2="7" stroke="#ff0000" stroke-width="7"></line></svg></label></div>
+	<div><input name="lineWidth" id="lw9" type="radio" value="9" onclick="lineWidth = 9;" /><label for="lw9"><svg id="svg9" width="50" height="15" viewbox="0 0 50 15"><line id="ln9" x1="5" y1="7" x2="45" y2="7" stroke="#ff0000" stroke-width="9"></line></svg></label></div>
+	<button style="width:80px; display:block;" onClick="sendSubmitCanvas()">submit</button>
+	<button style="width:80px; display:block;" onClick="sendClearCanvas()">clear</button>
+	<button style="width:80px; display:block;" onClick="sendExitCanvas()">exit</button>
+</div>
+<div id="messages"></div>
+</body>
+</html>
