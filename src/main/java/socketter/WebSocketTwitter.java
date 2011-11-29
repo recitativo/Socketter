@@ -22,8 +22,8 @@ import twitter4j.UserStream;
 import twitter4j.UserStreamAdapter;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.http.AccessToken;
-import twitter4j.http.RequestToken;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
 
 public class WebSocketTwitter implements WebSocket.OnTextMessage {
 
@@ -168,7 +168,7 @@ public class WebSocketTwitter implements WebSocket.OnTextMessage {
 			startTwitterUserStream();
 		} else if(mt.find()){
 			// tweet
-			if(tw == null || !tw.isOAuthEnabled()){
+			if(tw == null || !tw.getAuthorization().isEnabled()){
 				tw = getTwitter();
 			}
 			try {
@@ -201,7 +201,7 @@ public class WebSocketTwitter implements WebSocket.OnTextMessage {
 		}
 	
 		@Override
-		public void onScrubGeo(int arg0, long arg1) {
+		public void onScrubGeo(long arg0, long arg1) {
 			System.out.println("onScrubGeo");
 		}
 	
@@ -238,7 +238,7 @@ public class WebSocketTwitter implements WebSocket.OnTextMessage {
 		}
 	
 		@Override
-		public void onDeletionNotice(long arg0, int arg1) {
+		public void onDeletionNotice(long arg0, long arg1) {
 			System.out.println("onDeletionNotice " + screenName);
 		}
 	
@@ -258,7 +258,7 @@ public class WebSocketTwitter implements WebSocket.OnTextMessage {
 		}
 	
 		@Override
-		public void onFriendList(int[] arg0) {
+		public void onFriendList(long[] arg0) {
 			System.out.println("onFriendList " + screenName);
 		}
 	

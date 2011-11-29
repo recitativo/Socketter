@@ -3,7 +3,7 @@
   <groupId>Socketter</groupId>
   <artifactId>Socketter</artifactId>
   <name>Socketter</name>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <properties>
     <package.package-name>socketter</package.package-name>
     <package.main-class>${package.package-name}.${name}</package.main-class>
@@ -79,7 +79,17 @@
     <dependency>
       <groupId>org.twitter4j</groupId>
       <artifactId>twitter4j-core</artifactId>
-      <version>2.1.11</version>
+      <version>2.2.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.twitter4j</groupId>
+      <artifactId>twitter4j-async</artifactId>
+      <version>2.2.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.twitter4j</groupId>
+      <artifactId>twitter4j-stream</artifactId>
+      <version>2.2.5</version>
     </dependency>
   </dependencies>
 </project>

@@ -103,7 +103,7 @@ function sendMessage(ev){
 
 function sendMsg(msg){
 	if(msg == "help"){
-		dispMessage("msg", "Socketter は、HTML5の勉強用に作ったチャット＋Twitterのアプリだよ。\nWebSocket+SSL、Canvas、SVG、などなど使っているよ。\n※Chromeで動くことしか確認してないにょｗｗｗｗ\n\n文字列\n\tチャットメッセージをブロードキャストする。\n\ntwitter\n\ttwitterのOAuth認証を行うためのURLを表示する。\n\ntwitter(暗証番号)\n\tOAuth認証後、取得した暗証番号を送信してアクセストークンを取得する。\n\ntwitter(AccessToken,AccessTokenSecret)\n\t取得したアクセストークンを利用してtwitterにアクセスする。\n\ntweet(文字列)\n\ttwitterにアクセス出来ていれば、文字列をtwitterに投稿する。");
+		dispMessage("msg", "Socketter は、HTML5のチャット＋お絵かきチャット＋TwitterのWebアプリだよ。\nWebSocket+SSL、Canvas、SVG、などなど使っているよ。\n※ChromeとFirefoxで動くことしか確認してないにょｗｗｗｗ\n\n文字列\n\tチャットメッセージをブロードキャストする。\n\ntwitter\n\ttwitterのOAuth認証を行うためのURLを表示する。\n\ntwitter(暗証番号)\n\tOAuth認証後、取得した暗証番号を送信してアクセストークンを取得する。\n\ntwitter(AccessToken,AccessTokenSecret)\n\t取得したアクセストークンを利用してtwitterにアクセスする。\n\ntweet(文字列)\n\ttwitterにアクセス出来ていれば、文字列をtwitterに投稿する。");
 	}else if(msg != ""){
 		re = new RegExp("^twitter[ ]*\\(([a-zA-Z0-9\\-]+)[ ]*,[ ]*([a-zA-Z0-9]+)[ ]*\\)$");
 		if(msg.match(re)){
